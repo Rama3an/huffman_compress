@@ -166,5 +166,9 @@ class HuffmanCompress:
               "Хаффмана.")
         print("Использование:")
         print("\thuffmancoding = HuffmanCompress(path/to/file)")
-        print("\tСжатие файла: huffmancoding.compress()")
-        print("\tРазархивирование файла: huffmancoding.decompress('path/to/compressed/file.bin')")
+        print("\tСжатие файла: huffmancoding.compress()"
+              "(Можно использовать ключ '-c' в командной строке, чтобы файл только архивировался)")
+        print("\tРазархивирование файла: huffmancoding.decompress('path/to/compressed/file.bin')"
+              "(Можно использовать ключ '-dc' в командной строке, чтобы файл только архивировался)")
+        print("\tПри использовании ключа '-d' все действия будут логироваться и сохраняться"
+              " в соответствующий файл (loging.log)")

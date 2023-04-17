@@ -11,7 +11,7 @@ parser.add_argument('-c', '--compress', help='huffman compress file', action='st
 parser.add_argument('-dc', '--decompress', help='huffman decompress file', action='store_true')
 args = parser.parse_args()
 
-logger.add('debug.log', format='{time} {level} {message}', rotation='1 day') if args.DEBUG else None
+logger.add('loging.log', format='{time} {level} {message}', rotation='1 day') if args.DEBUG else None
 
 path = args.path
 dict_arg = {args.compress: HuffmanCompress(path).compress,
