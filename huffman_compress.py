@@ -1,11 +1,11 @@
 import heapq
 import os
+from loguru import logger
 
 DEBAG = False
 
 
 class HuffmanCompress:
-
     def __init__(self, path):
         self.path = path  # путь к исходному файлу
         self.heap = []  # куча, хранящая узлы дерева Хаффмана
@@ -108,7 +108,7 @@ class HuffmanCompress:
             b = self.get_byte_array(padded_encoded_text)
             output.write(bytes(b))
 
-        print("Compressed") if DEBAG else None
+        logger.debug("Compressed")
         return output_path
 
     @staticmethod
@@ -152,7 +152,7 @@ class HuffmanCompress:
 
             output.write(decompressed_text)
 
-        print("Decompressed") if DEBAG else None
+        logger.debug("Decompressed")
         return output_path
 
     @staticmethod
