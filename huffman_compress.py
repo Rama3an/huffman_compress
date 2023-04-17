@@ -1,8 +1,7 @@
 import heapq
 import os
+import json
 from loguru import logger
-
-DEBAG = False
 
 
 class HuffmanCompress:
@@ -59,6 +58,9 @@ class HuffmanCompress:
 
         self.make_codes_helper(root.left, current_code + "0")
         self.make_codes_helper(root.right, current_code + "1")
+
+        with open('test/input_code.txt', 'w') as path:
+            json.dump(self.reverse_mapping, path)
 
     def make_codes(self):
         root = heapq.heappop(self.heap)
@@ -121,24 +123,27 @@ class HuffmanCompress:
 
         return encoded_text
 
-    def decode_text(self, encoded_text):  # декодирование
+    @staticmethod
+    def decode_text(encoded_text):  # декодирование
         current_code = ""
         decoded_text = ""
+        with open('test/input_code.txt') as path:
+            reverse_mapping = json.load(path)
 
         for bit in encoded_text:
             current_code += bit
-            if current_code in self.reverse_mapping:
-                char = self.reverse_mapping[current_code]
+            if current_code in reverse_mapping:
+                char = reverse_mapping[current_code]
                 decoded_text += char
                 current_code = ""
 
         return decoded_text
 
-    def decompress(self, input_path):  # разархивация
+    def decompress(self):  # разархивация
         filename, file_extension = os.path.splitext(self.path)
-        output_path = filename + "_decompressed" + file_extension
+        output_path = filename + "_decompressed.txt"
 
-        with open(input_path, "rb") as file, open(output_path, "w") as output:
+        with open(self.path, "rb") as file, open(output_path, "w") as output:
             bit_string = ""
             byte = file.read(1)
             while byte:
