@@ -1,10 +1,14 @@
 import heapq
 import os
 import json
+from hashlib import sha256
 from loguru import logger
 
 
 class HuffmanCompress:
+    count = 0
+    f = True
+
     def __init__(self, path):
         self.path = path  # путь к исходному файлу
         self.heap = []  # куча, хранящая узлы дерева Хаффмана
@@ -59,15 +63,27 @@ class HuffmanCompress:
         self.make_codes_helper(root.left, current_code + "0")
         self.make_codes_helper(root.right, current_code + "1")
 
-        with open('test/input_code.txt', 'w') as path:
+    def make_file_codes(self):
+        while True:
+            try:
+                with open(f'test/code_{HuffmanCompress.count}.txt', 'x'):
+                    pass
+            except FileExistsError:
+                HuffmanCompress.count += 1
+                continue
+            else:
+                break
+        with open(f'test/code_{HuffmanCompress.count}.txt', 'w') as path:
             json.dump(self.reverse_mapping, path)
 
     def make_codes(self):
+
         root = heapq.heappop(self.heap)
         current_code = ""
         self.make_codes_helper(root, current_code)
 
     def get_encoded_text(self, text):  # получение закодированного текста
+
         encoded_text = ""
         for char in text:
             encoded_text += self.codes[char]
@@ -75,6 +91,7 @@ class HuffmanCompress:
 
     @staticmethod
     def pad_encoded_text(encoded_text):  # делает длину текста кратной 8
+
         padding_required = 8 - (len(encoded_text) % 8)
         for i in range(padding_required):
             encoded_text += "0"
@@ -85,6 +102,7 @@ class HuffmanCompress:
 
     @staticmethod
     def get_byte_array(padded_encoded_text):  # перевод закодированного текста в байты
+
         b = bytearray()
         for i in range(0, len(padded_encoded_text), 8):
             byte = padded_encoded_text[i:i + 8]
@@ -92,8 +110,9 @@ class HuffmanCompress:
         return b
 
     def compress(self):  # сжатие
+
         filename, file_extension = os.path.splitext(self.path)
-        output_path = filename + "_compressed" + ".bin"
+        output_path = filename + "_compressed.bin"
 
         with open(self.path, "r+") as file, open(output_path, "wb") as output:
             text = file.read()
@@ -107,14 +126,20 @@ class HuffmanCompress:
             encoded_text = self.get_encoded_text(text)
             padded_encoded_text = self.pad_encoded_text(encoded_text)
 
+            self.make_file_codes()
             b = self.get_byte_array(padded_encoded_text)
-            output.write(bytes(b))
+            output.writelines([f'test/code_{HuffmanCompress.count}.txt'.encode(),
+                               '\n'.encode(),
+                               sha256(text.encode()).hexdigest().encode(),
+                               '\n'.encode(),
+                               bytes(b)])
 
         logger.debug("Compressed")
         return output_path
 
     @staticmethod
     def remove_padding(padded_encoded_text):  # удаление добавочных нулей
+
         padded_info = padded_encoded_text[:8]
         padding_required = int(padded_info, 2)
 
@@ -123,12 +148,14 @@ class HuffmanCompress:
 
         return encoded_text
 
-    @staticmethod
-    def decode_text(encoded_text):  # декодирование
+    def decode_text(self, encoded_text):  # декодирование
+
         current_code = ""
         decoded_text = ""
-        with open('test/input_code.txt') as path:
-            reverse_mapping = json.load(path)
+        with open(f'{self.path}', 'rb') as file_compress:
+            path = file_compress.readline().decode()[:-1]
+            with open(path) as revers_mapping_file:
+                reverse_mapping = json.load(revers_mapping_file)
 
         for bit in encoded_text:
             current_code += bit
@@ -140,10 +167,15 @@ class HuffmanCompress:
         return decoded_text
 
     def decompress(self):  # разархивация
+
         filename, file_extension = os.path.splitext(self.path)
-        output_path = filename + "_decompressed.txt"
+        if file_extension != '.bin':
+            raise Exception
+        output_path = f'{filename}_decompressed.txt'
 
         with open(self.path, "rb") as file, open(output_path, "w") as output:
+            for _ in range(2):
+                file.readline()
             bit_string = ""
             byte = file.read(1)
             while byte:
@@ -162,7 +194,8 @@ class HuffmanCompress:
 
     @staticmethod
     def print_help():
-        print("Программа HuffmanCompress позволяет архивировать и разархивировать текстовые файлы с помощью алгоритма "
+        print("Программа HuffmanCompress позволяет архивировать и разархивировать "
+              "текстовые файлы с помощью алгоритма "
               "Хаффмана.")
         print("Использование:")
         print("\thuffmancoding = HuffmanCompress(path/to/file)")
