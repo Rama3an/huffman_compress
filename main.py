@@ -1,6 +1,5 @@
-from huffman_compress import HuffmanCompress
+from huffman_compress import HuffmanCompress, check_hash_logging, check_password_logging
 import argparse
-from hashlib import sha256
 from loguru import logger
 
 logger.remove()
@@ -15,25 +14,23 @@ path = args.path
 
 logger.add('log/loging.log', format='{time} {level} {message}', rotation='1 day') if args.DEBUG else None
 
-dict_arg = {args.compress: HuffmanCompress(path).compress,
-            args.decompress: HuffmanCompress(path).decompress}
-
-for k in dict_arg.keys():
-    if k:
-        try:
-            dict_arg.get(k, None)()
-        except Exception:
-            logger.error('File is warning')
+try:
+    if args.decompress:
+        h_dec = HuffmanCompress(path).decompress()
+        check_password_logging(path)
+        check_hash_logging(path, h_dec)
+    elif args.compress:
+        h_dec = HuffmanCompress(path).compress()
+except:
+    logger.error('File is warning')
 
 if path == 'help':
     HuffmanCompress.print_help()
 elif not (args.decompress or args.compress):
-    h_comp = HuffmanCompress(path).compress()
-    h_dec = HuffmanCompress(h_comp).decompress()
-    with open(h_comp, 'rb') as file_comp, open(h_dec, 'r') as file_dec:
-        hash_file_comp = file_comp.readlines()[1][:-1].decode()
-        hash_file_dec = sha256(file_dec.read().encode()).hexdigest()
-        if hash_file_dec != hash_file_comp:
-            logger.error('File not compiling')
-        else:
-            logger.debug('File compile')
+    try:
+        h_comp = HuffmanCompress(path).compress()
+        check_password_logging(h_comp)
+        h_dec = HuffmanCompress(h_comp).decompress()
+        check_hash_logging(h_comp, h_dec)
+    except:
+        logger.error('File is warning')

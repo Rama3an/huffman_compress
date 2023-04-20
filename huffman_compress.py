@@ -3,11 +3,11 @@ import os
 import json
 from hashlib import sha256
 from loguru import logger
+import getpass
 
 
 class HuffmanCompress:
     count = 0
-    f = True
 
     def __init__(self, path):
         self.path = path  # путь к исходному файлу
@@ -66,15 +66,15 @@ class HuffmanCompress:
     def make_file_codes(self):
         while True:
             try:
-                with open(f'test/code_{HuffmanCompress.count}.txt', 'x'):
-                    pass
-            except FileExistsError:
-                HuffmanCompress.count += 1
-                continue
-            else:
+                with open(f'test/code_{HuffmanCompress.count}.txt', 'x') as path:
+                    json.dump(self.reverse_mapping, path)
                 break
-        with open(f'test/code_{HuffmanCompress.count}.txt', 'w') as path:
-            json.dump(self.reverse_mapping, path)
+            except FileExistsError:
+                with open(f'test/code_{HuffmanCompress.count}.txt', 'r') as file_in_ls:
+                    file_read = json.load(file_in_ls)
+                if file_read == self.reverse_mapping:
+                    break
+            HuffmanCompress.count += 1
 
     def make_codes(self):
 
@@ -110,7 +110,7 @@ class HuffmanCompress:
         return b
 
     def compress(self):  # сжатие
-
+        password = getpass.getpass()
         filename, file_extension = os.path.splitext(self.path)
         output_path = filename + "_compressed.bin"
 
@@ -130,7 +130,9 @@ class HuffmanCompress:
             b = self.get_byte_array(padded_encoded_text)
             output.writelines([f'test/code_{HuffmanCompress.count}.txt'.encode(),
                                '\n'.encode(),
-                               sha256(text.encode()).hexdigest().encode(),
+                               sha256(password.encode()).digest(),
+                               '\n'.encode(),
+                               sha256(text.encode()).digest(),
                                '\n'.encode(),
                                bytes(b)])
 
@@ -167,14 +169,13 @@ class HuffmanCompress:
         return decoded_text
 
     def decompress(self):  # разархивация
-
         filename, file_extension = os.path.splitext(self.path)
         if file_extension != '.bin':
             raise Exception
         output_path = f'{filename}_decompressed.txt'
 
         with open(self.path, "rb") as file, open(output_path, "w") as output:
-            for _ in range(2):
+            for i in range(3):
                 file.readline()
             bit_string = ""
             byte = file.read(1)
@@ -205,3 +206,20 @@ class HuffmanCompress:
               "(Можно использовать ключ '-dc' в командной строке, чтобы файл только архивировался)")
         print("\tПри использовании ключа '-d' все действия будут логироваться и сохраняться"
               " в соответствующий файл (loging.log)")
+
+
+def check_hash_logging(h_comp, h_dec):
+    with open(h_comp, 'rb') as file_comp, open(h_dec, 'r') as file_dec:
+        hash_file_comp = file_comp.readlines()[2][:-1].hex()
+        hash_file_dec = sha256(file_dec.read().encode()).hexdigest()
+    logger.debug('Hashes matched') if hash_file_dec == hash_file_comp \
+        else logger.error('Hashes did not match')
+
+
+def check_password_logging(h_comp):
+    password = getpass.getpass()
+    password_hash = sha256(password.encode()).hexdigest()
+    with open(h_comp, 'rb') as file_comp:
+        password_file_hash = file_comp.readlines()[1][:-1].hex()
+    logger.debug('Password correct') if password_hash == password_file_hash \
+        else (logger.error('Password incorrect'), quit())
