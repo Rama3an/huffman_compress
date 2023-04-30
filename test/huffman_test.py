@@ -1,12 +1,14 @@
 import unittest
-from huffman_compress import HuffmanCompress
+from huffman_compress import HuffmanCompress, check_hash_logging, check_password_logging, get_result_compress
 
 
 class TestHuffmanCoding(unittest.TestCase):
 
     def setUp(self):
-        self.path = 'test_input.txt'
-        self.hc = HuffmanCompress(self.path)
+        self.path_compress = 'test_input.txt'
+        self.path_decompress = 'test_input_compressed.bin'
+        self.hdc = HuffmanCompress(self.path_decompress)
+        self.hc = HuffmanCompress(self.path_compress)
 
     def test_make_frequency_dict(self):
         text = "abbc"
@@ -62,6 +64,39 @@ class TestHuffmanCoding(unittest.TestCase):
         self.assertEqual(result, expected_result)
 
     def test_compress(self):
-        expected_result = 'test_input_compressed.bin'
-        result = self.hc.compress()
+        with (open(self.path_decompress, 'rb') as expected_path,
+              open(self.hc.compress(test_key=True), 'rb') as path):
+            expected_result = expected_path.read().split()
+            result = path.read().split()
         self.assertEqual(result, expected_result)
+
+    def test_decompress(self):
+        with open(self.path_compress, 'r') as expected_path, open(self.hdc.decompress(test_key=True), 'r') as path:
+            expected_result = expected_path.read().split()
+            result = path.read().split()
+        self.assertEqual(result, expected_result)
+
+    def test_make_file_codes(self):
+        expected_result = 'code_0.txt'
+        self.hc.compress(test_key=True)
+        self.hc.make_file_codes()
+        result = f'code_{self.hc.count}.txt'
+        self.assertEqual(result, expected_result)
+
+    def test_check_hash_logging(self):
+        expected_result = 'Hashes matched'
+        result = check_hash_logging(self.hc.compress(test_key=True),
+                                    self.hdc.decompress(test_key=True),
+                                    test_key=True)
+        self.assertEqual(result, expected_result)
+
+    def test_check_password_logging(self):
+        expected_result = 'Password correct'
+        result = check_password_logging(self.hc.compress(test_key=True),
+                                        test_key=True)
+        self.assertEqual(result, expected_result)
+
+    def test_get_result_compress(self):
+        express_result = 'Compress: -18.82%'
+        result = get_result_compress(self.path_compress, self.path_decompress)
+        self.assertEqual(result, express_result)
