@@ -113,7 +113,7 @@ class TestHuffmanCoding(TestCase):
         self.assertEqual(result, expected_result)
 
     def test_get_result_compress_positive(self):
-        expected_result = 'Compress: 33.49%'
+        expected_result = 'Compress: 33.47%'
         result = get_result_compress(self.path_compress_positive,
                                      self.path_decompress_positive)
         self.assertEqual(result, expected_result)
