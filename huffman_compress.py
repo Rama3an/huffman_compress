@@ -12,7 +12,8 @@ class HuffmanCompress:
     def __init__(self, path):
         self.path = path  # путь к исходному файлу
         self.heap = []  # куча, хранящая узлы дерева Хаффмана
-        self.codes = {}  # словарь, который хранит коды Хаффмана для каждого символа
+        self.codes = {}
+        # словарь, который хранит коды Хаффмана для каждого символа
         self.reverse_mapping = {}  # перевёрнутый codes
 
     class HeapNode:  # класс, описывающий узлы дерева
@@ -39,7 +40,8 @@ class HuffmanCompress:
             node = self.HeapNode(key, frequency[key])
             heapq.heappush(self.heap, node)
 
-    def merge_nodes(self):  # этот метод объединяет узлы, так, как описано в алгоритме Хаффмана
+    def merge_nodes(self):  # этот метод объединяет узлы, так,
+        # как описано в алгоритме Хаффмана
         while len(self.heap) > 1:
             node1 = heapq.heappop(self.heap)
             node2 = heapq.heappop(self.heap)
@@ -50,7 +52,8 @@ class HuffmanCompress:
 
             heapq.heappush(self.heap, merged)
 
-    def make_codes_helper(self, root, current_code):  # этот метод рекурсивно пробегает по дереву и составляет на его
+    def make_codes_helper(self, root, current_code):
+        # этот метод рекурсивно пробегает по дереву и составляет на его
         # основе коды Хаффмана
         if root is None:
             return
@@ -66,11 +69,13 @@ class HuffmanCompress:
     def make_file_codes(self, directory_key=''):
         while True:
             try:
-                with open(f'{directory_key}code_{HuffmanCompress.count}.txt', 'x') as path:
+                with open(f'{directory_key}code_'
+                          f'{HuffmanCompress.count}.txt', 'x') as path:
                     json.dump(self.reverse_mapping, path)
                 break
             except FileExistsError:
-                with open(f'{directory_key}code_{HuffmanCompress.count}.txt', 'r') as file_in_ls:
+                with open(f'{directory_key}code_'
+                          f'{HuffmanCompress.count}.txt', 'r') as file_in_ls:
                     file_read = json.load(file_in_ls)
                 if file_read == self.reverse_mapping:
                     break
@@ -101,7 +106,8 @@ class HuffmanCompress:
         return encoded_text
 
     @staticmethod
-    def get_byte_array(padded_encoded_text):  # перевод закодированного текста в байты
+    def get_byte_array(padded_encoded_text):  # перевод закодированного
+        # текста в байты
 
         b = bytearray()
         for i in range(0, len(padded_encoded_text), 8):
@@ -117,7 +123,8 @@ class HuffmanCompress:
         filename, file_extension = os.path.splitext(self.path)
         output_path = filename + "_compressed.bin"
 
-        with open(self.path, "r+") as file, open(output_path, "wb") as output:
+        with open(self.path, "r+") as file, open(output_path, "wb") \
+                as output:
             text = file.read()
             text = text.rstrip()
 
@@ -131,7 +138,8 @@ class HuffmanCompress:
 
             self.make_file_codes(directory_key=directory_key_codes)
             b = self.get_byte_array(padded_encoded_text)
-            output.writelines([f'{directory_key_codes}code_{HuffmanCompress.count}.txt'.encode(),
+            output.writelines([f'{directory_key_codes}code_'
+                               f'{HuffmanCompress.count}.txt'.encode(),
                                '\n'.encode(),
                                sha256(password.encode()).digest(),
                                '\n'.encode(),
@@ -177,7 +185,8 @@ class HuffmanCompress:
             raise Exception
         output_path = f'{filename}_decompressed.txt'
 
-        with open(self.path, "rb") as file, open(output_path, "w") as output:
+        with open(self.path, "rb") as file, open(output_path, "w") as \
+                output:
             for i in range(3):
                 file.readline()
             bit_string = ""
@@ -197,18 +206,23 @@ class HuffmanCompress:
         return output_path
 
     @staticmethod
-    def print_help():
-        print("Программа HuffmanCompress позволяет архивировать и разархивировать "
-              "текстовые файлы с помощью алгоритма "
-              "Хаффмана.")
-        print("Использование:")
-        print("\thuffmancoding = HuffmanCompress(path/to/file)")
-        print("\tСжатие файла: huffmancoding.compress()"
-              "(Можно использовать ключ '-c' в командной строке, чтобы файл только архивировался)")
-        print("\tРазархивирование файла: huffmancoding.decompress('path/to/compressed/file.bin')"
-              "(Можно использовать ключ '-dc' в командной строке, чтобы файл только архивировался)")
-        print("\tПри использовании ключа '-d' все действия будут логироваться и сохраняться"
-              " в соответствующий файл (loging.log)")
+    def return_help():
+        help_str = "Программа HuffmanCompress позволяет архивировать "
+        "и разархивировать текстовые файлы с помощью алгоритма "
+        "Хаффмана.\n"
+        "Использование:\n"
+        "\thuffmancoding = HuffmanCompress(path/to/file)\n"
+        "\tСжатие файла: huffmancoding.compress()"
+        "(Можно использовать ключ '-c' в командной строке, "
+        "чтобы файл только архивировался)\n"
+        "\tРазархивирование файла: huffmancoding.decompress"
+        "('path/to/compressed/file.bin')"
+        "(Можно использовать ключ '-dc' в командной строке,"
+        " чтобы файл только архивировался)\n"
+        "\tПри использовании ключа '-d' все действия будут"
+        " логироваться и сохраняться"
+        " в соответствующий файл (loging.log)"
+        return help_str
 
 
 def check_hash_logging(path_comp, path_dec, test_key=False):
@@ -223,10 +237,9 @@ def check_hash_logging(path_comp, path_dec, test_key=False):
             else logger.error('Hashes did not match')
 
 
-def check_password_logging(path_comp, test_key=False):
-    if test_key:
-        password = 'test password'
-    else:
+def check_password_logging(path_comp, test_key=False,
+                           password='test password'):
+    if not test_key:
         password = getpass.getpass()
 
     password_hash = sha256(password.encode()).hexdigest()
@@ -236,15 +249,21 @@ def check_password_logging(path_comp, test_key=False):
         return 'Password correct' if password_hash == password_file_hash \
             else 'Password incorrect'
     else:
-        logger.debug('Password correct') if password_hash == password_file_hash \
-            else (logger.error('Password incorrect'), quit())
+        logger.debug('Password correct') if password_hash == \
+                                            password_file_hash \
+                                            else \
+                                            (logger.error(
+                                                'Password incorrect'),
+                                             quit())
 
 
 def get_result_compress(path, path_comp):
     size_path = os.path.getsize(f'{path}')
     size_path_comp = os.path.getsize(f'{path_comp}')
     if size_path < size_path_comp:
-        percent_compress = f'Compress: {-round(size_path / size_path_comp * 100, 2)}%'
+        percent_compress = \
+            f'Compress: {-round(size_path / size_path_comp * 100, 2)}%'
     else:
-        percent_compress = f'Compress: {round(size_path_comp / size_path * 100, 2)}%'
+        percent_compress = \
+            f'Compress: {round(size_path_comp / size_path * 100, 2)}%'
     return percent_compress

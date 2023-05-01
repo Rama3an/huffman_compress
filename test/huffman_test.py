@@ -1,14 +1,17 @@
-import unittest
-from huffman_compress import HuffmanCompress, check_hash_logging, check_password_logging, get_result_compress
+from unittest import main, TestCase
+
+from huffman_compress import *
 
 
-class TestHuffmanCoding(unittest.TestCase):
+class TestHuffmanCoding(TestCase):
 
     def setUp(self):
         self.path_compress = 'test_input.txt'
         self.path_decompress = 'test_input_compressed.bin'
-        self.hdc = HuffmanCompress(self.path_decompress)
         self.hc = HuffmanCompress(self.path_compress)
+        self.hdc = HuffmanCompress(self.path_decompress)
+        self.path_compress_positive = 'test_input_positive.txt'
+        self.path_decompress_positive = 'test_input_positive_compressed.bin'
 
     def test_make_frequency_dict(self):
         text = "abbc"
@@ -71,7 +74,8 @@ class TestHuffmanCoding(unittest.TestCase):
         self.assertEqual(result, expected_result)
 
     def test_decompress(self):
-        with open(self.path_compress, 'r') as expected_path, open(self.hdc.decompress(test_key=True), 'r') as path:
+        with open(self.path_compress, 'r') as expected_path, \
+                open(self.hdc.decompress(test_key=True), 'r') as path:
             expected_result = expected_path.read().split()
             result = path.read().split()
         self.assertEqual(result, expected_result)
@@ -83,20 +87,56 @@ class TestHuffmanCoding(unittest.TestCase):
         result = f'code_{self.hc.count}.txt'
         self.assertEqual(result, expected_result)
 
-    def test_check_hash_logging(self):
+    def test_check_hash_logging_matched(self):
         expected_result = 'Hashes matched'
         result = check_hash_logging(self.hc.compress(test_key=True),
                                     self.hdc.decompress(test_key=True),
                                     test_key=True)
         self.assertEqual(result, expected_result)
 
-    def test_check_password_logging(self):
+    def test_check_password_logging_correct(self):
         expected_result = 'Password correct'
         result = check_password_logging(self.hc.compress(test_key=True),
                                         test_key=True)
         self.assertEqual(result, expected_result)
 
-    def test_get_result_compress(self):
-        express_result = 'Compress: -18.82%'
-        result = get_result_compress(self.path_compress, self.path_decompress)
-        self.assertEqual(result, express_result)
+    def test_check_password_logging_incorrect(self):
+        expected_result = 'Password incorrect'
+        result = check_password_logging(self.hc.compress(test_key=True),
+                                        test_key=True, password='incorrect')
+        self.assertEqual(result, expected_result)
+
+    def test_get_result_compress_negative(self):
+        expected_result = 'Compress: -16.47%'
+        result = get_result_compress(self.path_compress,
+                                     self.path_decompress)
+        self.assertEqual(result, expected_result)
+
+    def test_get_result_compress_positive(self):
+        expected_result = 'Compress: 33.49%'
+        result = get_result_compress(self.path_compress_positive,
+                                     self.path_decompress_positive)
+        self.assertEqual(result, expected_result)
+
+    def test_print_help(self):
+        expected_result = "Программа HuffmanCompress позволяет архивировать "
+        "и разархивировать текстовые файлы с помощью алгоритма "
+        "Хаффмана.\n"
+        "Использование:\n"
+        "\thuffmancoding = HuffmanCompress(path/to/file)\n"
+        "\tСжатие файла: huffmancoding.compress()"
+        "(Можно использовать ключ '-c' в командной строке, "
+        "чтобы файл только архивировался)\n"
+        "\tРазархивирование файла: huffmancoding.decompress"
+        "('path/to/compressed/file.bin')"
+        "(Можно использовать ключ '-dc' в командной строке,"
+        " чтобы файл только архивировался)\n"
+        "\tПри использовании ключа '-d' все действия будут"
+        " логироваться и сохраняться"
+        " в соответствующий файл (loging.log)"
+        result = self.hc.return_help()
+        self.assertEqual(result, expected_result)
+
+
+if __name__ == '__main__':
+    main()
