@@ -66,7 +66,7 @@ class HuffmanCompress:
         self.make_codes_helper(root.left, current_code + "0")
         self.make_codes_helper(root.right, current_code + "1")
 
-    def make_file_codes(self, directory_key):
+    def make_file_codes(self, directory_key=''):
         while True:
             try:
                 with open(f'{directory_key}code_'
@@ -115,7 +115,7 @@ class HuffmanCompress:
             b.append(int(byte, 2))
         return b
 
-    def compress(self, directory_key_codes, test_key=False):  # сжатие
+    def compress(self, directory_key_codes='', test_key=False):  # сжатие
         if not test_key:
             password = getpass.getpass()
         else:
