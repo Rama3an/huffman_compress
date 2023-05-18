@@ -1,4 +1,5 @@
 import heapq
+from collections import defaultdict
 import os
 import json
 from hashlib import sha256
@@ -18,7 +19,6 @@ class HuffmanCompress:
 
     class HeapNode:
         """Класс, описывающий узлы дерева"""
-
         def __init__(self, char, freq):
             self.char = char
             self.freq = freq
@@ -31,10 +31,8 @@ class HuffmanCompress:
     @staticmethod
     def make_frequency_dict(text):
         """Создание словаря частот"""
-        frequency = {}
+        frequency = defaultdict(int)
         for char in text:
-            if char not in frequency:
-                frequency[char] = 0
             frequency[char] += 1
         return frequency
 
@@ -94,7 +92,6 @@ class HuffmanCompress:
 
     def get_encoded_text(self, text):
         """Получение закодированного текста"""
-
         encoded_text = ""
         for char in text:
             encoded_text += self.codes[char]
@@ -105,8 +102,7 @@ class HuffmanCompress:
         """Делает длину текста кратной 8"""
 
         padding_required = 8 - (len(encoded_text) % 8)
-        for i in range(padding_required):
-            encoded_text += "0"
+        encoded_text += "0" * padding_required
 
         padded_info = "{0:08b}".format(padding_required)
         encoded_text = padded_info + encoded_text

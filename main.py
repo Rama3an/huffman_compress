@@ -16,7 +16,7 @@ parser.add_argument("-dc", "--decompress",
                     help="huffman decompress file", action="store_true")
 parser.add_argument("-t", "--test",
                     help="huffman test file", action="store_true")
-parser.add_argument("-h", "--help",
+parser.add_argument("-hh", "--huffman_help",
                     help="huffman test file", action="store_true")
 args = parser.parse_args()
 path = args.path
@@ -28,23 +28,20 @@ directory_key = "file/"
 if args.test:
     directory_key = "test/test_file/"
 
-try:
-    if args.decompress:
-        check_password_logging(path, test_key=args.test)
-        path_dec = HuffmanCompress(path).decompress()
-        check_hash_logging(path, path_dec, test_key=args.test)
-    elif args.compress:
-        path_comp = HuffmanCompress(path).compress(
-            directory_key_codes=directory_key, test_key=args.test)
-        print(get_result_compress(path, path_comp))
-    elif args.help:
-        print(HuffmanCompress.return_help())
-    else:
-        path_comp = HuffmanCompress(path).compress(
-            directory_key_codes=directory_key, test_key=args.test)
-        print(get_result_compress(path, path_comp))
-        check_password_logging(path_comp, test_key=args.test)
-        path_dec = HuffmanCompress(path_comp).decompress()
-        check_hash_logging(path_comp, path_dec, test_key=args.test)
-except:
-    logger.error("file is warning")
+if args.decompress:
+    check_password_logging(path, test_key=args.test)
+    path_dec = HuffmanCompress(path).decompress()
+    check_hash_logging(path, path_dec, test_key=args.test)
+elif args.compress:
+    path_comp = HuffmanCompress(path).compress(
+        directory_key_codes=directory_key, test_key=args.test)
+    print(get_result_compress(path, path_comp))
+elif args.huffman_help:
+    print(HuffmanCompress.return_help())
+else:
+    path_comp = HuffmanCompress(path).compress(
+        directory_key_codes=directory_key, test_key=args.test)
+    print(get_result_compress(path, path_comp))
+    check_password_logging(path_comp, test_key=args.test)
+    path_dec = HuffmanCompress(path_comp).decompress()
+    check_hash_logging(path_comp, path_dec, test_key=args.test)
