@@ -1,5 +1,5 @@
 from unittest import main, TestCase
-from huffman_compress import HuffmanCompress
+from huffman_compress.huffman_compress import HuffmanCompress
 
 
 class TestHuffmanCoding(TestCase):
@@ -21,11 +21,11 @@ class TestHuffmanCoding(TestCase):
     def test_merge_nodes(self):
         frequency = {"a": 1, "b": 2, "c": 1}
         self.huffman_compress.make_heap(frequency)
-        expected_result = self.huffman_compress.HeapNode(None, 4)
-        expected_result.left = self.huffman_compress.HeapNode("b", 2)
-        expected_result.right = self.huffman_compress.HeapNode(None, 2)
-        expected_result.right.left = self.huffman_compress.HeapNode("a", 1)
-        expected_result.right.right = self.huffman_compress.HeapNode("c", 1)
+        expected_result = self.huffman_compress.heap_node(None, 4)
+        expected_result.left = self.huffman_compress.heap_node("b", 2)
+        expected_result.right = self.huffman_compress.heap_node(None, 2)
+        expected_result.right.left = self.huffman_compress.heap_node("a", 1)
+        expected_result.right.right = self.huffman_compress.heap_node("c", 1)
         self.huffman_compress.merge_nodes()
         result = self.huffman_compress.heap[0]
         self.assertEqual(result.freq, expected_result.freq)
@@ -92,7 +92,7 @@ class TestHuffmanCoding(TestCase):
         "Хаффмана.\n"
         "Использование:\n"
         "\thuffmancoding = HuffmanCompress(path/to/file)\n"
-        "\tСжатие файла: huffmancoding.compress()"
+        "\tСжатие файла: huffmancoding.huffman_compress()"
         "(Можно использовать ключ '-c' в командной строке, "
         "чтобы файл только архивировался)\n"
         "\tРазархивирование файла: huffmancoding.decompress"

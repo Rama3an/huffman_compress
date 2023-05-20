@@ -42,12 +42,14 @@ def check_password_logging(path_comp, test_key=False,
 
 
 def get_result_compress(path, path_comp):
+    percent = 100
+    point = 2
     size_path = os.path.getsize(f'{path}')
     size_path_comp = os.path.getsize(f'{path_comp}')
     if size_path < size_path_comp:
         percent_compress = \
-            f"Compress: {-round(size_path / size_path_comp * 100, 2)}%"
+            f"Compress: {-round(size_path / size_path_comp * percent, point)}%"
     else:
         percent_compress = \
-            f"Compress: {round(size_path_comp / size_path * 100, 2)}%"
+            f"Compress: {round(size_path_comp / size_path * percent, point)}%"
     return percent_compress

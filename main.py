@@ -1,5 +1,5 @@
-from huffman_compress import HuffmanCompress
-from password_hash_compress_check import check_hash_logging, check_password_logging, get_result_compress
+from huffman_compress.huffman_compress import HuffmanCompress
+from huffman_compress.password_hash_compress_check import check_hash_logging, check_password_logging, get_result_compress
 import argparse
 from loguru import logger
 
@@ -7,11 +7,11 @@ logger.remove()
 
 parser = argparse.ArgumentParser()
 parser.add_argument("path", metavar="file", type=str,
-                    help="path to compress")
+                    help="path to huffman_compress")
 parser.add_argument("-d", "--DEBUG",
                     help="DEBUG, default False", action="store_true")
-parser.add_argument("-c", "--compress",
-                    help="huffman compress file", action="store_true")
+parser.add_argument("-c", "--huffman_compress",
+                    help="huffman huffman_compress file", action="store_true")
 parser.add_argument("-dc", "--decompress",
                     help="huffman decompress file", action="store_true")
 parser.add_argument("-t", "--test",

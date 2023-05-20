@@ -1,4 +1,4 @@
-from password_hash_compress_check import check_password_logging, check_hash_logging, get_result_compress
+from huffman_compress.password_hash_compress_check import check_password_logging, check_hash_logging, get_result_compress
 import pytest
 
 
